@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Solar System</title>
+    <script src="script/aframe.min.js"></script>
+    <style>
+      body { margin: 0; background: #000; font-family: 'Courier New', monospace; }
+
+      #info-panel {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.75);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 12px;
+        color: #fff;
+        padding: 14px 28px;
+        text-align: center;
+        pointer-events: none;
+        z-index: 10;
+        backdrop-filter: blur(6px);
+        min-width: 260px;
+      }
+      #info-panel h2 { margin: 0 0 4px; font-size: 1.2rem; letter-spacing: 2px; color: #f0c060; }
+      #info-panel p  { margin: 0; font-size: 0.8rem; color: #aaa; max-width: 380px; }
+
+      #speed-control {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(0,0,0,0.7);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 10px;
+        padding: 12px 18px;
+        color: #fff;
+        z-index: 10;
+        backdrop-filter: blur(6px);
+      }
+      #speed-control label { font-size: 0.75rem; letter-spacing: 1px; color: #aaa; display: block; margin-bottom: 6px; }
+      #speed-slider { width: 130px; accent-color: #f0c060; }
+
+      #title-card {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        color: #fff;
+        z-index: 10;
+        pointer-events: none;
+      }
+      #title-card h1 { margin: 0; font-size: 1.1rem; letter-spacing: 4px; color: #f0c060; }
+      #title-card p  { margin: 2px 0 0; font-size: 0.7rem; letter-spacing: 2px; color: #555; }
+    </style>
+  </head>
+  <body>
+
+    <div id="title-card">
+      <h1>SOLAR SYSTEM</h1>
+      <p>CLICK A PLANET TO LEARN MORE</p>
+    </div>
+
+    <div id="speed-control">
+      <label>ORBIT SPEED</label>
+      <input type="range" id="speed-slider" min="0" max="5" step="0.1" value="1" />
+    </div>
+
+    <div id="info-panel">
+      <h2 id="planet-name">THE SUN</h2>
+      <p id="planet-desc">Our star — a G-type main-sequence star 4.6 billion years old.</p>
+    </div>
+
+    <a-scene background="color: #000" renderer="antialias: true">
+
+      <!-- Stars skybox -->
+      <a-sky src="texture/2k_stars_milky_way.jpg" radius="500"></a-sky>
+
+      <!-- Camera -->
+      <a-entity id="rig" position="0 10 80">
+        <a-camera look-controls wasd-controls="acceleration:30">
+          <a-cursor color="#f0c060" fuse="false" raycaster="objects: .clickable"></a-cursor>
+        </a-camera>
+      </a-entity>
+
+      <!-- ===== SUN ===== -->
+      <a-sphere id="sun"
+        class="clickable"
+        data-name="THE SUN"
+        data-desc="Our star — a G-type main-sequence star 4.6 billion years old, containing 99.8% of the Solar System's mass."
+        src="texture/2k_sun.jpg"
+        radius="6"
+        position="0 0 0"
+        emissive="#ff8800"
+        emissive-intensity="0.4"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 25000; easing: linear">
+      </a-sphere>
+      <!-- Sun glow -->
+      <a-sphere radius="6.6" position="0 0 0" color="#ff6600" opacity="0.09" shader="flat" side="back"></a-sphere>
+      <a-sphere radius="7.4" position="0 0 0" color="#ff3300" opacity="0.04" shader="flat" side="back"></a-sphere>
+
+      <!-- ===== ORBIT CONTAINERS (positions updated by JS) ===== -->
+
+      <!-- Mercury -->
+      <a-sphere id="mercury"
+        class="clickable"
+        data-name="MERCURY"
+        data-desc="The smallest planet and closest to the Sun. Its year is just 88 Earth days, but a day lasts 59 Earth days."
+        src="texture/2k_mercury.jpg"
+        radius="0.35"
+        position="9 0 0"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear">
+      </a-sphere>
+
+      <!-- Venus -->
+      <a-sphere id="venus"
+        class="clickable"
+        data-name="VENUS"
+        data-desc="The hottest planet (465°C average) with a thick CO₂ atmosphere. It rotates backwards very slowly."
+        src="texture/2k_venus_atmosphere.jpg"
+        radius="0.87"
+        position="13 0 0"
+        animation="property: rotation; to: 0 -360 0; loop: true; dur: 24300; easing: linear">
+      </a-sphere>
+
+      <!-- Earth -->
+      <a-sphere id="earth"
+        class="clickable"
+        data-name="EARTH"
+        data-desc="Our home. The only known planet with life, liquid surface water, and a large stabilising moon."
+        src="texture/2k_earth_daymap.jpg"
+        radius="0.92"
+        position="18 0 0"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 5000; easing: linear">
+      </a-sphere>
+
+      <!-- Moon (child of earth position, updated separately) -->
+      <a-sphere id="moon"
+        class="clickable"
+        data-name="THE MOON"
+        data-desc="Earth's only natural satellite, stabilising our axial tilt and driving our tides."
+        src="texture/2k_moon.jpg"
+        radius="0.25"
+        position="19.8 0 0">
+      </a-sphere>
+
+      <!-- Mars -->
+      <a-sphere id="mars"
+        class="clickable"
+        data-name="MARS"
+        data-desc="The Red Planet. Home to Olympus Mons — the tallest volcano in the Solar System at 22 km high."
+        src="texture/2k_mars.jpg"
+        radius="0.49"
+        position="24 0 0"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 4900; easing: linear">
+      </a-sphere>
+
+      <!-- Jupiter -->
+      <a-sphere id="jupiter"
+        class="clickable"
+        data-name="JUPITER"
+        data-desc="The largest planet — over twice the mass of all other planets combined. Its Great Red Spot is a centuries-old storm."
+        src="texture/2k_jupiter.jpg"
+        radius="3.2"
+        position="35 0 0"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 3500; easing: linear">
+      </a-sphere>
+
+      <!-- Saturn + rings -->
+      <a-entity id="saturn-system" position="47 0 0">
+        <a-sphere id="saturn"
+          class="clickable"
+          data-name="SATURN"
+          data-desc="Famous for its dazzling ring system of ice and rock. Saturn is the least dense planet — it would float on water."
+          src="texture/2k_saturn.jpg"
+          radius="2.7"
+          animation="property: rotation; to: 0 360 0; loop: true; dur: 3800; easing: linear">
+        </a-sphere>
+        <a-torus radius="4.2" radius-tubular="0.55" segments-radial="3" segments-tubular="100"
+          color="#d4b483" opacity="0.9" transparent="true" rotation="85 0 0" shader="flat">
+        </a-torus>
+        <a-torus radius="5.2" radius-tubular="0.4" segments-radial="3" segments-tubular="100"
+          color="#c8a060" opacity="0.6" transparent="true" rotation="85 0 0" shader="flat">
+        </a-torus>
+        <a-torus radius="6.0" radius-tubular="0.25" segments-radial="3" segments-tubular="100"
+          color="#b89050" opacity="0.3" transparent="true" rotation="85 0 0" shader="flat">
+        </a-torus>
+      </a-entity>
+
+      <!-- Uranus -->
+      <a-sphere id="uranus"
+        class="clickable"
+        data-name="URANUS"
+        data-desc="An ice giant tipped on its side with a 97.8° axial tilt. It has 13 known rings and 28 moons."
+        src="texture/2k_uranus.jpg"
+        radius="1.8"
+        position="58 0 0"
+        rotation="0 0 97.8"
+        animation="property: rotation; to: 97.8 360 0; loop: true; dur: 6200; easing: linear">
+      </a-sphere>
+
+      <!-- Neptune -->
+      <a-sphere id="neptune"
+        class="clickable"
+        data-name="NEPTUNE"
+        data-desc="The windiest planet — storms reach 2,100 km/h. Its large moon Triton orbits in retrograde."
+        src="texture/2k_neptune.jpg"
+        radius="1.75"
+        position="70 0 0"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 6000; easing: linear">
+      </a-sphere>
+
+    </a-scene>
+
+    <script>
+      // Orbit definitions: [element-id, orbit-radius, base-period-ms]
+      const ORBITS = [
+        { id: 'mercury', r: 9,   period: 18000  },
+        { id: 'venus',   r: 13,  period: 46000  },
+        { id: 'earth',   r: 18,  period: 75000  },
+        { id: 'mars',    r: 24,  period: 141000 },
+        { id: 'jupiter', r: 35,  period: 376000 },
+        { id: 'saturn-system', r: 47, period: 932000 },
+        { id: 'uranus',  r: 58,  period: 2660000 },
+        { id: 'neptune', r: 70,  period: 5200000 },
+      ];
+
+      // Spread planets around the orbit at start
+      const START_ANGLES = {
+        mercury: 0, venus: 0.8, earth: 1.8, mars: 3.3,
+        jupiter: 5.0, 'saturn-system': 2.2, uranus: 0.5, neptune: 4.1
+      };
+
+      const angles = {};
+      ORBITS.forEach(o => { angles[o.id] = START_ANGLES[o.id] || 0; });
+
+      let moonAngle = 0;
+      let speedMultiplier = 1;
+      let lastTime = null;
+
+      function tick(ts) {
+        if (!lastTime) lastTime = ts;
+        const dt = (ts - lastTime) / 1000;
+        lastTime = ts;
+
+        ORBITS.forEach(o => {
+          const angularSpeed = (2 * Math.PI) / (o.period / 1000) * speedMultiplier * 300;
+          angles[o.id] += angularSpeed * dt;
+          const x = Math.cos(angles[o.id]) * o.r;
+          const z = Math.sin(angles[o.id]) * o.r;
+          const el = document.getElementById(o.id);
+          if (el) el.setAttribute('position', `${x.toFixed(3)} 0 ${z.toFixed(3)}`);
+        });
+
+        // Moon orbits Earth
+        moonAngle += (2 * Math.PI / 8) * speedMultiplier * dt;
+        const earthEl = document.getElementById('earth');
+        const moonEl  = document.getElementById('moon');
+        if (earthEl && moonEl) {
+          const ep = earthEl.getAttribute('position');
+          const mx = ep.x + Math.cos(moonAngle) * 1.8;
+          const mz = ep.z + Math.sin(moonAngle) * 1.8;
+          moonEl.setAttribute('position', `${mx.toFixed(3)} 0 ${mz.toFixed(3)}`);
+        }
+
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+
+      // Speed slider
+      document.getElementById('speed-slider').addEventListener('input', e => {
+        speedMultiplier = parseFloat(e.target.value);
+      });
+
+      // Click info panel
+      document.querySelectorAll('.clickable').forEach(el => {
+        el.addEventListener('click', () => {
+          document.getElementById('planet-name').textContent = el.dataset.name || '';
+          document.getElementById('planet-desc').textContent = el.dataset.desc || '';
+        });
+      });
+    </script>
+  </body>
+</html>
